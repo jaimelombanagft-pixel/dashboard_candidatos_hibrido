@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Evaluación Candidatos Híbrido (Java/Kotlin/Swift/ObjC)</title>
+<style>
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;background:#0f172a;color:#e5e7eb}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+.header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.title{font-size:20px;font-weight:600}
+.subtitle{font-size:13px;color:#64748b;margin-top:4px}
+.card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:16px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+label{display:block;font-size:13px;color:#cbd5e1;margin-bottom:6px}
+input[type=text],select,textarea{width:100%;background:#0b1220;border:1px solid #1f2937;color:#e5e7eb;border-radius:10px;padding:10px;font-size:14px;box-sizing:border-box}
+textarea{min-height:80px}
+/* Sector blocks */
+.sector{border-radius:14px;padding:4px;margin-bottom:20px}
+.sector.android{border:2px solid #22c55e;background:rgba(34,197,94,.04)}
+.sector.ios{border:2px solid #60a5fa;background:rgba(96,165,250,.04)}
+.sector.lider{border:2px solid #c084fc;background:rgba(192,132,252,.04)}
+.sector-header{display:flex;align-items:center;gap:10px;padding:10px 12px 8px 12px}
+.sector-title{font-size:16px;font-weight:700}
+.sector.android .sector-title{color:#22c55e}
+.sector.ios .sector-title{color:#60a5fa}
+.sector.lider .sector-title{color:#c084fc}
+.sector-icon{font-size:20px}
+.sector-weight{font-size:12px;color:#64748b;margin-left:auto}
+.section{border:1px solid #1f2937;border-radius:10px;padding:12px;background:#0b1220;margin:8px}
+.section h3{margin:0 0 8px 0;font-size:14px}
+.android .section h3{color:#4ade80}
+.ios .section h3{color:#93c5fd}
+.lider .section h3{color:#e879f9}
+.row{display:grid;grid-template-columns:1.3fr .7fr .4fr;gap:10px;align-items:center;padding:6px 8px;border-radius:8px}
+.row:nth-child(odd){background:#0a1424}
+.help{font-size:12px;color:#9ca3af}
+.respuesta-esperada{background:rgba(250,204,21,.06);border:1px solid rgba(250,204,21,.22);border-radius:8px;padding:10px 12px;font-size:12px;color:#fef9c3;margin:2px 0 6px 0;line-height:1.6;display:none}
+.respuesta-esperada strong{color:#fde047;display:block;margin-bottom:4px;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.btn-toggle-resp{padding:2px 8px;font-size:11px;border-radius:6px;margin-top:5px;display:inline-block;background:#1e293b;color:#94a3b8;border:1px solid #334155;cursor:pointer}
+.btn-toggle-resp:hover{background:#334155;color:#e2e8f0}
+.item-wrap{margin-bottom:2px}
+.radios{display:flex;gap:8px}
+.radios label{margin:0;color:#e5e7eb}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#1f2937;color:#e5e7eb;font-size:12px}
+.badge.android-badge{background:rgba(34,197,94,.15);color:#4ade80}
+.badge.ios-badge{background:rgba(96,165,250,.15);color:#93c5fd}
+.badge.lider-badge{background:rgba(192,132,252,.15);color:#e879f9}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+button{background:#2563eb;color:#fff;border:0;border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer}
+button.secondary{background:#334155}
+/* Summary */
+.summary-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+.score{font-size:28px;font-weight:700}
+.score-label{font-size:12px;color:#64748b;margin-bottom:4px}
+.score-val{font-size:22px;font-weight:700}
+.score-val.android{color:#4ade80}
+.score-val.ios{color:#93c5fd}
+.score-val.lider{color:#e879f9}
+.decision{font-size:16px}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border-bottom:1px solid #1f2937;padding:8px;text-align:left;font-size:13px}
+.ok{color:#22c55e}
+.warn{color:#f59e0b}
+.bad{color:#ef4444}
+.footnote{font-size:12px;color:#94a3b8;margin-top:8px}
+.toast{position:fixed;top:16px;right:16px;background:#16a34a;color:#fff;border-radius:10px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:1000;opacity:0;transform:translateY(-8px);transition:opacity .2s ease,transform .2s ease}
+.toast.warn{background:#f59e0b}
+.toast.error{background:#ef4444}
+.toast.show{opacity:1;transform:translateY(0)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1100}
+.modal{background:#0b1220;border:1px solid #1f2937;border-radius:12px;width:320px;padding:16px;color:#e5e7eb}
+.modal h4{margin:0 0 8px 0;font-size:16px;color:#93c5fd}
+.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.sector-divider{height:1px;background:#1e293b;margin:4px 8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="title">Dashboard Evaluación — Perfil Híbrido Nativo</div>
+      <div class="subtitle">Java · Kotlin · Swift · Objective-C &nbsp;|&nbsp; Android · iOS · Líder Técnico</div>
+    </div>
+    <div class="actions">
+      <button id="btnGuardar">Guardar evaluación</button>
+      <button id="btnNueva" class="secondary">Nueva evaluación</button>
+      <button id="btnJSON" class="secondary">Exportar JSON</button>
+      <button id="btnXLSX" class="secondary">Exportar XLSX</button>
+      <button id="btnXLSM" class="secondary">Exportar XLSM</button>
+      <button id="btnFeedback" style="background:#7c3aed">Generar Feedback RR.HH.</button>
+      <button id="btnRecuperar" class="secondary">Recuperar borrador</button>
+      <button id="btnLimpiar" class="secondary">Limpiar borrador</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div>
+        <label>Nombre del candidato</label>
+        <input id="nombre" type="text" placeholder="Ej: Juan Pérez" />
+      </div>
+      <div>
+        <label>Senioridad esperada</label>
+        <select id="senioridad">
+          <option value="Junior">Junior</option>
+          <option value="Semi Senior">Semi Senior</option>
+          <option value="Senior">Senior</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div id="rubrica"></div>
+
+  <!-- Summary -->
+  <div class="card">
+    <div class="summary-grid">
+      <div>
+        <div class="badge">Puntaje global</div>
+        <div id="puntaje" class="score" style="margin-top:8px">0%</div>
+      </div>
+      <div>
+        <div class="badge android-badge">Android</div>
+        <div id="scoreAndroid" class="score-val android" style="margin-top:8px">0%</div>
+      </div>
+      <div>
+        <div class="badge ios-badge">iOS</div>
+        <div id="scoreIOS" class="score-val ios" style="margin-top:8px">0%</div>
+      </div>
+      <div>
+        <div class="badge lider-badge">Líder Técnico</div>
+        <div id="scoreLider" class="score-val lider" style="margin-top:8px">0%</div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="badge">Decisión</div>
+      <div id="decision" class="decision" style="margin-top:6px;font-size:16px">Sin calificación</div>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div class="card">
+    <div style="margin-bottom:10px">
+      <label>Filtro</label>
+      <input id="filtro" type="text" placeholder="Buscar por nombre" />
+    </div>
+    <table class="table" id="tabla">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Nombre</th>
+          <th>Senioridad</th>
+          <th>Global</th>
+          <th>Android</th>
+          <th>iOS</th>
+          <th>Líder</th>
+          <th>Decisión</th>
+          <th>Feedback</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="footnote">Los datos se guardan en el navegador del equipo.</div>
+  </div>
+</div>
+
+<div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<div id="modalDel" class="modal-backdrop" aria-modal="true" role="dialog">
+  <div class="modal">
+    <h4>Confirmar borrado</h4>
+    <label>Ingresa la clave</label>
+    <input id="claveDel" type="password" placeholder="Clave" />
+    <div class="actions">
+      <button id="btnDelCancel" class="secondary">Cancelar</button>
+      <button id="btnDelOk">Borrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── RÚBRICA ────────────────────────────────────────────────────────────────
+const rubrica = [
+  // ===== SECTOR ANDROID =====
+  {
+    id: "kotlin_moderno",
+    sector: "android",
+    nombre: "Kotlin (principal) & Programación Reactiva",
+    peso: 7,
+    items: [
+      {
+        id: "coroutines_flow",
+        texto: "Kotlin Coroutines & Flow",
+        peso: 2,
+        ayuda: "launch/async, CoroutineScope, structured concurrency. StateFlow vs SharedFlow, cold vs hot streams, backpressure, snapshotFlow.",
+        respuesta: "El candidato debe explicar que las Coroutines permiten manejar tareas asíncronas sin bloquear el hilo principal. <b>Puntos clave:</b> 'launch' lanza una tarea sin devolver resultado; 'async/await' devuelve un resultado (Deferred). CoroutineScope define el ciclo de vida: cuando se cancela, cancela todas sus coroutines hijas. Flow es frío (no emite hasta que hay un colector). StateFlow es caliente y siempre tiene un valor actual — ideal para representar el estado de la UI. SharedFlow es para eventos únicos como notificaciones o navegación. <b>Respuesta parcial:</b> conoce Coroutines pero confunde StateFlow con LiveData o no sabe la diferencia entre flow frío y caliente."
+      },
+      {
+        id: "reactiva_android",
+        texto: "Programación Reactiva — RxJava/RxAndroid + Kotlin Flow",
+        peso: 3,
+        ayuda: "RxJava: Observable, Single, Maybe, Completable, Subject, Schedulers (io/main), disposables, operadores (map, flatMap, zip). RxAndroid: AndroidSchedulers. Diferencias y migración a Kotlin Flow.",
+        respuesta: "El candidato debe conocer los tipos principales de RxJava: Observable (múltiples valores), Single (un valor), Completable (sin valor, solo éxito/error). Los Schedulers controlan en qué hilo corre el código: Schedulers.io() para operaciones en segundo plano (red, BD), AndroidSchedulers.mainThread() para actualizar la UI. Los Disposable se usan para cancelar suscripciones y evitar memory leaks — si no se cancelan al destruir la pantalla, pueden causar crashes. Diferencia con Kotlin Flow: Flow es más moderno, nativo de Kotlin y se integra con Coroutines; RxJava es más maduro y se encuentra mucho en proyectos legacy. <b>Respuesta parcial:</b> conoce RxJava básico pero no maneja Disposables o no sabe compararlo con Flow."
+      },
+      {
+        id: "kotlin_features",
+        texto: "Features avanzados de Kotlin & KMP",
+        peso: 2,
+        ayuda: "Sealed classes/interfaces, data classes, extension functions, inline functions, delegation, context receivers (K2). KMP: expect/actual, módulo shared, Compose Multiplatform.",
+        respuesta: "Debe mencionar al menos: <b>sealed classes</b> para representar estados finitos (ej: Loading, Success, Error) y garantizar que el when sea exhaustivo; <b>data classes</b> con equals/hashCode/copy automáticos para modelos de datos; <b>extension functions</b> para añadir métodos a clases existentes sin herencia (muy usado con Context, String, etc.); <b>inline functions</b> para lambdas sin overhead de creación de objetos. KMP: permite compartir código Kotlin (lógica de negocio, networking) entre Android e iOS usando expect/actual para la parte dependiente de plataforma. <b>Respuesta parcial:</b> conoce las features pero no puede explicar cuándo aplicarlas."
+      }
+    ]
+  },
+  {
+    id: "java_android",
+    sector: "android",
+    nombre: "Java en Android (legacy)",
+    peso: 3,
+    items: [
+      {
+        id: "java_concurrencia",
+        texto: "Concurrencia en Java (threads, ExecutorService)",
+        peso: 1,
+        ayuda: "Thread, Runnable, ExecutorService, Future, CompletableFuture. Conocimiento de código legacy y migración a Coroutines.",
+        respuesta: "Debe saber que en Java no se crean Threads directamente en producción — se usa ExecutorService que gestiona un pool de hilos reutilizables (Executors.newFixedThreadPool, newSingleThreadExecutor). Future.get() bloquea el hilo hasta obtener el resultado (problemático en el hilo principal). El problema de Java vs Coroutines es que Java no tiene cancelación estructurada: si el Activity se destruye, el thread Java sigue corriendo. <b>Respuesta parcial:</b> sabe crear Threads pero no ExecutorService, o no entiende los riesgos de acceder a UI desde un thread de fondo."
+      },
+      {
+        id: "java_kotlin_interop",
+        texto: "Interoperabilidad Java ↔ Kotlin",
+        peso: 2,
+        ayuda: "@JvmStatic, @JvmOverloads, @JvmField, nullabilidad, companion objects desde Java. Estrategias de migración progresiva.",
+        respuesta: "Para llamar código Kotlin desde Java se necesitan anotaciones específicas: <b>@JvmStatic</b> para que los métodos de un companion object se llamen como métodos estáticos Java; <b>@JvmOverloads</b> para generar sobrecargas de funciones con parámetros por defecto; <b>@JvmField</b> para exponer propiedades sin getter/setter. Los tipos nullable de Kotlin (String?) aparecen en Java como @Nullable. La migración progresiva consiste en convertir un archivo .java a .kt a la vez sin romper el código Java que lo usa. <b>Respuesta parcial:</b> sabe que Kotlin y Java son interoperables pero no conoce las anotaciones necesarias."
+      }
+    ]
+  },
+  {
+    id: "compose",
+    sector: "android",
+    nombre: "UI — Jetpack Compose (principal) & XML Views (legacy)",
+    peso: 6,
+    items: [
+      {
+        id: "composable_basico",
+        texto: "Jetpack Compose: Composables, estado y recomposición",
+        peso: 2,
+        ayuda: "@Composable, árbol de UI, recomposición inteligente, slot API, CompositionLocal. remember/rememberSaveable, hoisting de estado, ViewModel + StateFlow, derivedStateOf.",
+        respuesta: "Una función @Composable describe la UI de forma declarativa (qué mostrar, no cómo dibujarlo). La <b>recomposición</b> ocurre automáticamente cuando cambia el estado, y Compose es inteligente para re-ejecutar solo las partes que cambiaron. <b>remember</b> guarda un valor entre recomposiciones; <b>rememberSaveable</b> además lo conserva si se rota la pantalla. El <b>hoisting de estado</b> consiste en mover el estado hacia arriba para que el Composable sea stateless y más testeable. El ViewModel expone un StateFlow que la UI observa con collectAsState(). <b>Respuesta parcial:</b> entiende qué es Compose pero no puede explicar la recomposición o el hoisting de estado."
+      },
+      {
+        id: "compose_performance",
+        texto: "Optimización Compose: Stability, Baseline Profiles",
+        peso: 2,
+        ayuda: "@Stable/@Immutable, skippable composables, LazyColumn keys, Baseline Profiles, tracing, Layout Inspector en Compose.",
+        respuesta: "Para evitar recomposiciones innecesarias, los parámetros de un Composable deben ser estables. Se marcan con <b>@Stable</b> (las propiedades pueden cambiar pero Compose es notificado) o <b>@Immutable</b> (nunca cambian). Si los parámetros son estables y no cambiaron, Compose omite la recomposición (skippable). En <b>LazyColumn</b>, las keys estables permiten a Compose identificar qué ítems cambiaron en lugar de redibujarlo todo. Los <b>Baseline Profiles</b> pre-compilan el código de Compose para mejorar el tiempo de inicio de la app. <b>Respuesta parcial:</b> usa LazyColumn pero no conoce @Stable/@Immutable o Baseline Profiles."
+      },
+      {
+        id: "xml_views_legacy",
+        texto: "XML Views (legacy): ViewBinding, RecyclerView, Fragments",
+        peso: 2,
+        ayuda: "ViewBinding vs DataBinding, RecyclerView + DiffUtil, Fragments y back stack, Material Components. Cuándo mantener XML vs migrar a Compose. Interop: ComposeView en XML, AndroidView en Compose.",
+        respuesta: "<b>ViewBinding</b> genera una clase por cada XML que permite acceder a las vistas directamente y de forma type-safe, sin riesgo de NullPointerException ni casting. <b>RecyclerView + DiffUtil</b>: DiffUtil calcula las diferencias entre dos listas y solo actualiza los elementos que cambiaron (más eficiente que notifyDataSetChanged). Cuándo mantener XML: proyectos legacy, librerías que solo soportan Views, mapas con MapView. <b>Interop</b>: ComposeView para poner Compose dentro de XML; AndroidView() para poner Views nativas dentro de Compose. <b>Respuesta parcial:</b> conoce ViewBinding y RecyclerView pero no sabe integrar con Compose."
+      }
+    ]
+  },
+  {
+    id: "networking_android",
+    sector: "android",
+    nombre: "Networking",
+    peso: 4,
+    items: [
+      {
+        id: "retrofit_okhttp",
+        texto: "Retrofit + OkHttp",
+        peso: 2,
+        ayuda: "Retrofit: @GET/@POST, converters (Gson/Moshi/KotlinX), suspend functions. OkHttp: interceptores (logging, auth), SSL Pinning, timeouts, cache.",
+        respuesta: "<b>Retrofit</b> convierte una API REST en una interfaz Kotlin con anotaciones (@GET, @POST, @Body, @Query). Usando 'suspend fun' el resultado llega directamente sin callbacks. Se configura un Converter (Moshi o kotlinx.serialization para Kotlin, Gson para legacy). <b>OkHttp</b> es el cliente HTTP subyacente: los <b>interceptores</b> permiten añadir headers de autenticación a todas las requests automáticamente o hacer logging. <b>SSL Pinning</b> valida el certificado específico del servidor para prevenir ataques donde alguien intercepta el tráfico. <b>Respuesta parcial:</b> usa Retrofit para llamadas básicas pero no sabe configurar interceptores ni SSL Pinning."
+      },
+      {
+        id: "ktor_client",
+        texto: "Ktor Client",
+        peso: 2,
+        ayuda: "Ktor HttpClient, motores (CIO, OkHttp, Android), serialización con kotlinx.serialization, WebSockets, uso en KMP compartido.",
+        respuesta: "<b>Ktor</b> es el framework de JetBrains para networking, diseñado desde cero para Kotlin y Coroutines. Su ventaja principal frente a Retrofit es que es <b>multiplataforma</b>: el mismo código de networking corre en Android e iOS dentro de un módulo KMP. Se configura con un 'engine' (CIO para multiplataforma, OkHttp en Android), el plugin ContentNegotiation con kotlinx.serialization para parsear JSON, y soporte nativo para WebSockets. <b>Respuesta parcial:</b> conoce Ktor de nombre pero no sabe configurarlo, o no entiende por qué se prefiere sobre Retrofit en proyectos KMP."
+      }
+    ]
+  },
+  {
+    id: "arquitectura_android",
+    sector: "android",
+    nombre: "Arquitectura, DI & Almacenamiento",
+    peso: 5,
+    items: [
+      {
+        id: "clean_arch_android",
+        texto: "Clean Architecture + MVVM/MVI",
+        peso: 2,
+        ayuda: "Capas Use Case / Repository / Data Source. MVVM con ViewModel + StateFlow. MVI: intent, state, side effects (UiEvent).",
+        respuesta: "Clean Architecture divide el código en tres capas aisladas: <b>Presentación</b> (ViewModel, UI), <b>Dominio</b> (Use Cases con lógica de negocio pura, sin dependencias de Android ni de librerías externas) y <b>Datos</b> (Repositories que abstraen si los datos vienen de API, base de datos o caché). El ViewModel nunca llama directamente a la API — siempre pasa por un Use Case. <b>MVVM</b>: el ViewModel expone un StateFlow con el estado; la UI observa y se redibuja automáticamente. <b>MVI</b>: la UI envía Intents (acciones del usuario), el ViewModel los procesa y emite un nuevo UiState inmutable. <b>Respuesta parcial:</b> conoce MVVM pero no puede explicar Clean Architecture con sus capas."
+      },
+      {
+        id: "hilt_koin",
+        texto: "Inyección de dependencias: Hilt (principal) + Koin",
+        peso: 2,
+        ayuda: "Hilt: @HiltViewModel, @Module, @Provides, @Binds, scopes. Koin: módulos, single/factory/viewModel, inyección por delegado. Cuándo elegir uno u otro.",
+        respuesta: "<b>Hilt</b> (recomendado por Google): usa anotaciones para configurar las dependencias (@HiltViewModel en el ViewModel, @Inject constructor, @Module/@Provides para dependencias de terceros). Detecta errores en tiempo de compilación. <b>Koin</b>: usa un DSL de Kotlin (module { single { } factory { } viewModel { } }), más fácil de aprender, sin procesamiento de anotaciones — detecta errores en runtime. Hilt es preferido en proyectos Android grandes por su integración con el ciclo de vida. Koin es más simple y funciona también en KMP. <b>Respuesta parcial:</b> entiende el concepto de DI pero no sabe implementarla con ninguno de los dos."
+      },
+      {
+        id: "storage_android",
+        texto: "Almacenamiento: Room Database + DataStore",
+        peso: 1,
+        ayuda: "Room: @Entity, @Dao, @Database, Flow queries, migrations. DataStore (Preferences/Proto): reemplazo moderno de SharedPreferences, coroutines-first.",
+        respuesta: "<b>Room</b> es el ORM oficial de Android sobre SQLite. Se define una @Entity (tabla), un @Dao con las queries (pueden devolver Flow para actualizarse automáticamente) y una @Database. Soporta migraciones para actualizar el esquema sin perder datos. <b>DataStore</b> es el reemplazo moderno de SharedPreferences: usa Coroutines y Flow (no bloquea el hilo principal), es seguro para operaciones asíncronas y sobrevive a errores de IO. Preferences DataStore para clave-valor simple; Proto DataStore para datos tipados con Protocol Buffers. <b>Respuesta parcial:</b> usa Room o SharedPreferences pero no sabe por qué DataStore es mejor."
+      }
+    ]
+  },
+  {
+    id: "ia_ml_android",
+    sector: "android",
+    nombre: "IA / ML en Android",
+    peso: 5,
+    items: [
+      {
+        id: "ml_kit",
+        texto: "ML Kit",
+        peso: 2,
+        ayuda: "Text Recognition, Barcode Scanning, Face Detection, Pose Detection, Translation, Smart Reply. On-device vs cloud APIs. Integración con CameraX.",
+        respuesta: "<b>ML Kit</b> es el SDK de Google para IA on-device en apps móviles. No requiere conocimientos de machine learning para usarlo. Debe mencionar al menos dos APIs: Text Recognition (extraer texto de imágenes/documentos), Face Detection (detectar rostros, puntos de referencia y expresiones), Barcode Scanning (leer QR y códigos de barras), o Translation (traducir texto sin internet). La ventaja clave es que funciona <b>completamente on-device</b> (sin enviar datos al servidor, más rápido, funciona sin internet). Se integra con CameraX para procesar frames de la cámara en tiempo real. <b>Respuesta parcial:</b> conoce ML Kit de nombre pero no ha implementado ninguna API concreta."
+      },
+      {
+        id: "tflite_mediapipe",
+        texto: "TensorFlow Lite & MediaPipe Tasks",
+        peso: 2,
+        ayuda: "TFLite: .tflite models, Interpreter, GPU delegate, optimización (quantización, pruning). MediaPipe Tasks: LLM Inference API, object detection, image segmentation.",
+        respuesta: "<b>TensorFlow Lite</b> permite ejecutar modelos de machine learning custom en el dispositivo. El modelo .tflite se añade al proyecto como asset, se carga con el Interpreter, se le pasan tensores de entrada (ej: una imagen como array de floats) y se leen los tensores de salida (ej: clasificación con probabilidades). El GPU Delegate acelera la inferencia usando la GPU del dispositivo. La <b>quantización</b> reduce el tamaño del modelo (ej: de float32 a int8) con mínima pérdida de precisión. <b>MediaPipe Tasks</b> es más alto nivel: ofrece detección de objetos, segmentación de imágenes, y desde 2024 la LLM Inference API para correr modelos de lenguaje on-device. <b>Respuesta parcial:</b> sabe qué es TFLite pero nunca ha integrado un modelo real."
+      },
+      {
+        id: "gemini_android",
+        texto: "Gemini en Android (Android Studio AI + Gemini Nano)",
+        peso: 1,
+        ayuda: "Gemini en Android Studio: sugerencias, generación de código, explicaciones. Gemini Nano (AICore): on-device inference, Gemini API (Google AI SDK) en apps Android.",
+        respuesta: "<b>Gemini en Android Studio</b>: el asistente integrado puede autocompletar código, generar funciones a partir de un comentario, explicar código seleccionado, encontrar bugs y generar tests. <b>Gemini Nano</b> es el modelo más pequeño de Google diseñado para correr directamente en el dispositivo (a través de AICore en Android 14+), lo que permite inferencia sin internet y con privacidad total. Para integrar Gemini en una app se puede usar el <b>Google AI SDK para Android</b> (llamadas a la API cloud) o el <b>AICore SDK</b> para inferencia on-device. <b>Respuesta parcial:</b> usa Gemini en Android Studio como herramienta pero no conoce Gemini Nano ni la integración on-device."
+      }
+    ]
+  },
+  {
+    id: "ar_xr_android",
+    sector: "android",
+    nombre: "AR / XR en Android",
+    peso: 3,
+    items: [
+      {
+        id: "arcore",
+        texto: "ARCore",
+        peso: 1,
+        ayuda: "ARCore: motion tracking, environmental understanding, light estimation, Cloud Anchors. Integración con Sceneform o RealityCore.",
+        respuesta: "<b>ARCore</b> es el SDK de Google para Realidad Aumentada en Android. Sus capacidades principales: <b>Motion Tracking</b> (saber exactamente dónde está el dispositivo en el espacio 3D usando la cámara y el giroscopio), <b>Environmental Understanding</b> (detectar planos horizontales como el suelo y verticales como paredes para apoyar objetos virtuales), <b>Light Estimation</b> (ajustar el brillo de los objetos 3D según la iluminación real del entorno) y <b>Cloud Anchors</b> (compartir objetos AR entre usuarios en el mismo espacio físico). Se integra con SceneView o el viewer de modelos GLTF/GLB. <b>Respuesta parcial:</b> sabe qué es AR pero no ha trabajado con ARCore directamente."
+      },
+      {
+        id: "jetpack_xr",
+        texto: "Jetpack XR: SceneCore + Compose para XR",
+        peso: 2,
+        ayuda: "Jetpack XR (Android XR): SceneCore para gestión de escenas 3D, Session y entities. Compose para XR: Subspace, SpatialPanel, Orbiter, Volume. Desarrollo para Android XR y compatibilidad con apps 2D.",
+        respuesta: "<b>Jetpack XR</b> es el framework de Google para Android XR (dispositivos de realidad mixta). Tiene dos capas: <b>SceneCore</b> (nivel bajo) gestiona la sesión XR y las entities 3D en el espacio — cada objeto 3D es una entidad con componentes (modelo, física, interacción). <b>Compose para XR</b> (nivel alto) extiende Jetpack Compose con componentes espaciales: SpatialPanel (panel 2D flotante en el espacio), Orbiter (elemento que orbita alrededor del contenido principal), Volume (caja 3D con contenido volumétrico). Las apps 2D de Android son compatibles en modo ventana dentro del entorno XR sin modificación. <b>Respuesta parcial:</b> conoce AR básico con ARCore pero no las APIs de Jetpack XR para espacios 3D."
+      }
+    ]
+  },
+  {
+    id: "performance_android",
+    sector: "android",
+    nombre: "Performance & Testing Android",
+    peso: 3,
+    items: [
+      {
+        id: "android_profiler",
+        texto: "Android Profiler, LeakCanary, StrictMode",
+        peso: 1,
+        ayuda: "Memory/CPU/Network Profiler en Android Studio, LeakCanary para memory leaks, StrictMode, identificación de ANR y jank (frame drops).",
+        respuesta: "Debe saber usar el <b>Memory Profiler</b> de Android Studio para detectar memory leaks (objetos que se acumulan en el heap sin liberarse, típicamente Activity/Fragment retenidos por listeners o handlers). <b>LeakCanary</b> detecta automáticamente memory leaks en modo debug y muestra la cadena de referencias que impide la liberación del objeto. <b>StrictMode</b> lanza warnings cuando se hacen operaciones de disco o red en el hilo principal. <b>ANR</b> (App Not Responding) ocurre cuando el hilo principal está bloqueado más de 5 segundos — se evita moviendo trabajo pesado a Coroutines. El CPU Profiler identifica <b>jank</b> (frames que tardan más de 16ms en dibujarse, causando lag visible). <b>Respuesta parcial:</b> conoce el Profiler visualmente pero no ha diagnosticado un leak real."
+      },
+      {
+        id: "testing_android",
+        texto: "Testing: JUnit, MockK, Espresso, Compose Testing APIs",
+        peso: 2,
+        ayuda: "JUnit4/5, MockK (mocking idiomático en Kotlin), Turbine para Flow. Espresso para UI testing. Compose Testing APIs: composeTestRule, finders (onNodeWithText), actions, assertions. Robolectric.",
+        respuesta: "<b>JUnit</b>: framework base para tests unitarios con @Test, @Before, @After. <b>MockK</b>: crea objetos falsos (mocks) en Kotlin de forma idiomática — mockk<>, every { } para definir comportamiento, verify { } para comprobar llamadas. <b>Turbine</b>: simplifica testear Flows de Kotlin (awaitItem(), awaitComplete()). <b>Espresso</b>: automatiza interacciones con Views reales en un emulador/dispositivo (onView(withId(R.id.btn)).perform(click())). <b>Compose Testing APIs</b>: composeTestRule.onNodeWithText('Login').performClick(), .assertIsDisplayed() — no requiere IDs, usa semántica. Diferencia clave: test unitario corre en la JVM (rápido), test instrumental requiere emulador (más lento pero más real). <b>Respuesta parcial:</b> escribe tests unitarios con JUnit pero no sabe hacer tests de UI."
+      }
+    ]
+  },
+  {
+    id: "distribucion_android",
+    sector: "android",
+    nombre: "Distribución & CI/CD Android",
+    peso: 4,
+    items: [
+      {
+        id: "google_play",
+        texto: "Google Play Console",
+        peso: 2,
+        ayuda: "Android App Bundle (AAB), Play App Signing, internal/closed/open testing tracks, staged rollout, release management, pre-launch report, Play Integrity API.",
+        respuesta: "<b>AAB (Android App Bundle)</b> es el formato de publicación moderno que reemplaza al APK: en lugar de subir un solo APK grande para todos los dispositivos, Google Play genera APKs optimizados por dispositivo (resolución de pantalla, arquitectura de CPU, idioma). Resultado: apps más pequeñas para el usuario. <b>Play App Signing</b>: Google gestiona la clave de firma final, el desarrollador sube con una clave de subida. <b>Tracks de prueba</b>: Internal Testing (equipo interno, inmediato) → Closed Testing (grupo específico) → Open Testing (cualquiera) → Production (todos). El <b>staged rollout</b> permite lanzar primero al 10% de usuarios, monitorear crashes y ampliar si todo va bien. <b>Respuesta parcial:</b> ha publicado apps pero no conoce AAB, tracks o staged rollout."
+      },
+      {
+        id: "firebase_cicd",
+        texto: "Firebase App Distribution + GitHub Actions",
+        peso: 2,
+        ayuda: "Firebase App Distribution: distribución a testers, grupos, integración con Fastlane/Gradle. GitHub Actions: workflows para build/test/deploy, secrets, cache de Gradle, matrix builds.",
+        respuesta: "<b>Firebase App Distribution</b> permite distribuir APKs/AABs a testers internos sin pasar por la Play Store, organizados en grupos por correo electrónico. Los testers reciben un enlace para instalar directamente. Se integra con Fastlane (lane distribute_to_firebase) o con el plugin de Gradle. <b>GitHub Actions</b>: el candidato debe saber crear un archivo YAML en .github/workflows/ con triggers (on: push/pull_request), jobs que ejecutan steps: checkout del código, configuración de Java/SDK, compilación con Gradle, ejecución de tests, y distribución a Firebase. Los secretos (keystore, tokens) se guardan en GitHub Secrets. El caché de dependencias de Gradle reduce el tiempo de build. <b>Respuesta parcial:</b> ha usado CI/CD pero solo como usuario, sin configurar los workflows."
+      }
+    ]
+  },
+  // ===== SECTOR iOS =====
+  {
+    id: "swift_moderno",
+    sector: "ios",
+    nombre: "Swift Moderno & Programación Reactiva",
+    peso: 7,
+    items: [
+      {
+        id: "swift_concurrency",
+        texto: "Swift Concurrency — async/await, Actors",
+        peso: 3,
+        ayuda: "async/await, Task, TaskGroup, @MainActor, Actor para thread safety, structured concurrency, AsyncStream, continuations.",
+        respuesta: "El candidato debe explicar que <b>async/await</b> permite escribir código asíncrono de forma secuencial y legible, sin anidación de callbacks (callback hell). Una función 'async' puede suspenderse sin bloquear el hilo — el hilo queda libre para hacer otra cosa mientras se espera. 'await' indica el punto de suspensión. <b>@MainActor</b> garantiza que el código se ejecute siempre en el hilo principal, necesario para actualizar la UI con seguridad. Un <b>Actor</b> protege su estado interno de accesos concurrentes simultáneos — solo un hilo puede acceder a la vez, eliminando condiciones de carrera sin semáforos manuales. <b>TaskGroup</b> permite lanzar múltiples tareas en paralelo y esperar todas. <b>Respuesta parcial:</b> entiende async/await básico pero no sabe qué es un Actor ni @MainActor."
+      },
+      {
+        id: "swiftui_reactiva",
+        texto: "SwiftUI (principal) + Programación Reactiva (Combine / RxSwift)",
+        peso: 2,
+        ayuda: "@Observable (iOS 17), NavigationStack, ViewModifier, animations. Combine: Publishers/Subscribers, operators. RxSwift: Observable, Subject, Disposable, diferencias con Combine.",
+        respuesta: "<b>SwiftUI</b> es el framework declarativo principal de Apple: la UI se describe como función del estado. Property wrappers clave: @State (estado local de la vista, solo esa vista lo ve), @Binding (estado compartido entre padre e hijo sin duplicarlo), @ObservedObject/@StateObject (ViewModel observable), @EnvironmentObject (estado global sin pasar explícitamente), @Observable (iOS 17, simplifica todo). <b>Combine</b>: framework reactivo nativo de Apple. Publisher emite valores, Subscriber los recibe. Operadores: map, filter, combineLatest, flatMap. <b>RxSwift</b>: librería reactiva más madura, disponible en iOS versiones antiguas. Observable, Subject (BehaviorSubject para estado, PublishSubject para eventos), Disposable para cancelar. Diferencia clave: Combine requiere iOS 13+, RxSwift funciona desde iOS 9. <b>Respuesta parcial:</b> conoce SwiftUI básico pero no los property wrappers o no sabe qué es Combine."
+      },
+      {
+        id: "swift_features",
+        texto: "Features modernos de Swift (5.9+/6)",
+        peso: 2,
+        ayuda: "Parameter packs, macros (@Observable), result builders, opaque types (some/any), Regex literals, Swift 6 strict concurrency, Swift Package Manager.",
+        respuesta: "<b>Macros en Swift 5.9</b>: generan código en tiempo de compilación. @Observable (iOS 17) es una macro que reemplaza ObservableObject + @Published, generando automáticamente el código de observación. <b>Result Builders</b>: el DSL declarativo que hace posible SwiftUI (cada línea de un body es una llamada a un builder). <b>Opaque types</b>: 'some View' significa 'algún tipo concreto que cumple View, el compilador lo sabe pero el API no lo expone' (más eficiente). 'any View' es un existential (más flexible, pero boxing en heap). <b>Swift 6 strict concurrency</b>: el compilador detecta condiciones de carrera en tiempo de compilación, no en runtime. <b>Respuesta parcial:</b> usa Swift moderno pero no puede explicar macros o la diferencia entre some/any."
+      }
+    ]
+  },
+  {
+    id: "objc",
+    sector: "ios",
+    nombre: "Objective-C",
+    peso: 4,
+    items: [
+      {
+        id: "objc_runtime",
+        texto: "Runtime de Objective-C (KVC/KVO, Categories)",
+        peso: 1,
+        ayuda: "Message passing, method swizzling, KVC/KVO, Categories, Protocols, ARC vs MRC, blocks.",
+        respuesta: "Objective-C funciona con <b>message passing</b> en lugar de llamadas directas a métodos: [objeto mensaje] se traduce en objc_msgSend en runtime. Esto permite <b>method swizzling</b> (cambiar en runtime la implementación de un método) — usado para logging, analytics o testing, pero peligroso si se abusa. <b>KVC</b> (Key-Value Coding) accede a propiedades por nombre como string (valueForKey:), útil para binding. <b>KVO</b> (Key-Value Observing) notifica automáticamente cambios en propiedades. <b>Categories</b> añaden métodos a clases existentes sin subclasificar. Se ve principalmente en código legacy iOS anterior a Swift. <b>Respuesta parcial:</b> conoce la sintaxis básica de ObjC pero no el runtime ni method swizzling."
+      },
+      {
+        id: "objc_swift_bridge",
+        texto: "Bridging Objective-C ↔ Swift",
+        peso: 3,
+        ayuda: "Bridging headers, NS_SWIFT_NAME, nullability annotations, @objc/@objcMembers, migración progresiva a Swift.",
+        respuesta: "Para usar código ObjC desde Swift: el <b>Bridging Header</b> (NombreApp-Bridging-Header.h) lista los #import de archivos ObjC que quieren accesibles en Swift. En sentido contrario, Swift genera automáticamente NombreApp-Swift.h para que ObjC acceda a las clases Swift marcadas con <b>@objc</b>. Las <b>anotaciones de nullability</b> en ObjC (nullable / nonnull) se traducen directamente en Optional / non-optional en Swift — sin ellas, todo aparece como ImplicitlyUnwrappedOptional. <b>@objcMembers</b> expone todos los miembros de una clase sin anotarlos uno a uno. La <b>migración progresiva</b> consiste en convertir un archivo .m a .swift a la vez, manteniendo ambos lenguajes funcionando. <b>Respuesta parcial:</b> ha trabajado en proyectos mixtos pero no sabe configurar el bridging desde cero."
+      }
+    ]
+  },
+  {
+    id: "uikit_moderno",
+    sector: "ios",
+    nombre: "UIKit (legacy) & Networking",
+    peso: 5,
+    items: [
+      {
+        id: "uikit_avanzado",
+        texto: "UIKit: ciclo de vida, Auto Layout — integración con SwiftUI",
+        peso: 2,
+        ayuda: "UIViewController lifecycle, Auto Layout programático, UICollectionViewCompositionalLayout. UIViewRepresentable, UIHostingController. Cuándo elegir UIKit vs SwiftUI.",
+        respuesta: "<b>Ciclo de vida UIViewController</b>: viewDidLoad (se llama una vez al cargar la vista — setup inicial), viewWillAppear/viewDidAppear (antes/después de mostrarse — actualizar datos), viewWillDisappear/viewDidDisappear (antes/después de ocultarse — limpiar recursos). <b>Auto Layout programático</b> con NSLayoutAnchor: view.topAnchor.constraint(equalTo: parent.topAnchor, constant: 16).isActive = true. <b>Cuándo usar UIKit vs SwiftUI</b>: UIKit para proyectos legacy, componentes muy custom, o cuando se requiere soporte iOS 12 y anterior. SwiftUI para proyectos nuevos con iOS 16+. <b>Integración</b>: UIHostingController envuelve SwiftUI en UIKit; UIViewRepresentable hace lo inverso (pone una UIView en SwiftUI). <b>Respuesta parcial:</b> conoce el ciclo de vida pero no Auto Layout programático ni la integración."
+      },
+      {
+        id: "ios_networking",
+        texto: "Networking: URLSession async + SwiftNIO",
+        peso: 2,
+        ayuda: "URLSession con async/await, interceptores, SSL Pinning. SwiftNIO: event loops, channels, uso en SDKs de bajo nivel o server-side Swift.",
+        respuesta: "<b>URLSession con async/await</b>: let (data, response) = try await URLSession.shared.data(from: url) — sin completion handlers, cancelable con Task. Para añadir headers a todas las requests se usa un URLSessionDelegate o se crea un URLRequest personalizado. <b>SSL Pinning</b>: en el delegate URLSessionDelegate.urlSession(_:didReceive:completionHandler:) se valida el certificado o la clave pública del servidor — previene ataques donde alguien intercepta el tráfico con un certificado falso (man-in-the-middle). <b>SwiftNIO</b>: framework asíncrono de bajo nivel para networking, similar a Netty en Java. No se usa en apps iOS estándar — se usa para construir servidores HTTP, SDKs de red custom o clientes de protocolos propietarios. <b>Respuesta parcial:</b> usa URLSession con completion handlers pero no async/await; no conoce SwiftNIO."
+      },
+      {
+        id: "ios_data",
+        texto: "Persistencia iOS",
+        peso: 1,
+        ayuda: "Core Data / SwiftData (iOS 17), Realm, Keychain, UserDefaults.",
+        respuesta: "<b>Core Data</b>: ORM de Apple sobre SQLite. Se define el modelo en un .xcdatamodeld, se crean NSManagedObject, se usan NSFetchRequest para queries. Complejo pero muy poderoso. <b>SwiftData</b> (iOS 17+): sucesor de Core Data con una API moderna — se marca la clase con @Model y todo se configura automáticamente con macros de Swift. <b>Realm</b>: base de datos de objetos de terceros, más fácil de aprender que Core Data, con queries reactivas. <b>Keychain</b>: almacenamiento seguro cifrado por hardware para contraseñas y tokens — nunca guardar credenciales en UserDefaults. <b>Respuesta parcial:</b> usa solo UserDefaults para guardar datos y desconoce las opciones para datos sensibles o estructurados."
+      }
+    ]
+  },
+  {
+    id: "ia_ml_ios",
+    sector: "ios",
+    nombre: "IA / ML en iOS",
+    peso: 5,
+    items: [
+      {
+        id: "core_create_ml",
+        texto: "Core ML & Create ML",
+        peso: 3,
+        ayuda: "Integración de modelos .mlmodel, Vision framework, Natural Language, Create ML para entrenar modelos on-device. Optimización de modelos (quantización, Neural Engine).",
+        respuesta: "<b>Core ML</b> permite integrar modelos de ML en apps iOS sin conocimientos profundos de machine learning. El modelo .mlmodel se arrastra al proyecto en Xcode y este genera automáticamente la clase Swift de interfaz (entrada/salida tipados). <b>Vision framework</b> usa Core ML para tareas de visión: clasificación de imágenes, detección de objetos, reconocimiento de texto (VNRecognizeTextRequest), detección de caras (VNDetectFaceRectanglesRequest). <b>Natural Language</b>: análisis de texto, detección de idioma, clasificación de sentimientos. <b>Create ML</b>: app de macOS para entrenar modelos propios con datos del cliente sin escribir código Python — se arrastra un dataset, se configura el tipo de modelo y se exporta como .mlmodel. El <b>Neural Engine</b> del chip Apple acelera la inferencia on-device, consumiendo menos batería que la CPU. <b>Respuesta parcial:</b> ha usado Core ML con un modelo existente pero no sabe entrenar con Create ML."
+      },
+      {
+        id: "apple_intelligence",
+        texto: "Apple Intelligence & on-device AI",
+        peso: 2,
+        ayuda: "Apple Intelligence APIs (iOS 18+): Writing Tools, Image Playground, Siri con App Intents. On-device inference vs cloud. Privacy-preserving AI.",
+        respuesta: "<b>Apple Intelligence</b> (iOS 18+, iPhone 15 Pro y superiores) es el conjunto de capacidades de IA integradas en el sistema. <b>Writing Tools</b>: en cualquier campo de texto de la app (sin código extra) el usuario puede reescribir, resumir, corregir o cambiar el tono del texto. <b>App Intents + Siri mejorado</b>: si la app expone App Intents, Siri puede entender contexto y ejecutar acciones dentro de la app en lenguaje natural. <b>Image Playground</b>: generación de imágenes que se puede integrar. La inferencia corre <b>on-device</b> por defecto para proteger la privacidad — para tareas más complejas usa Private Cloud Compute (los datos no se almacenan en servidores de Apple). <b>Respuesta parcial:</b> conoce Siri con shortcuts pero no las APIs de Apple Intelligence específicas."
+      }
+    ]
+  },
+  {
+    id: "ar_vision_ios",
+    sector: "ios",
+    nombre: "AR / Spatial Computing",
+    peso: 3,
+    items: [
+      {
+        id: "arkit_realitykit",
+        texto: "ARKit 6 & RealityKit",
+        peso: 2,
+        ayuda: "ARKit 6: LiDAR, scene reconstruction, motion capture. RealityKit: Entity-Component system, Reality Composer Pro, USDZ, animaciones físicas.",
+        respuesta: "<b>ARKit 6</b> proporciona la base de AR: <b>Motion Tracking</b> (saber exactamente dónde está el dispositivo en el espacio 3D), <b>Plane Detection</b> (detectar superficies horizontales como el suelo y verticales como paredes), <b>Light Estimation</b> (ajustar la iluminación de objetos virtuales a la luz real del entorno). Con <b>LiDAR</b> (iPhone Pro) la reconstrucción de la escena es mucho más precisa y rápida. <b>RealityKit</b> es el motor de renderizado 3D para AR: usa un sistema Entidad-Componente donde Entity es un objeto en la escena y Component define su comportamiento (ModelComponent para el modelo 3D, PhysicsBodyComponent para física, AnchoringComponent para anclar al mundo real). <b>Reality Composer Pro</b> permite diseñar escenas AR visualmente. Los modelos se distribuyen en formato <b>USDZ</b>. <b>Respuesta parcial:</b> ha explorado AR con demos pero no conoce RealityKit ni el sistema de entidades."
+      },
+      {
+        id: "visionos",
+        texto: "visionOS & SwiftUI Spatial",
+        peso: 1,
+        ayuda: "Desarrollo para Apple Vision Pro: WindowGroup, ImmersiveSpace, volumetric apps, SwiftUI 3D, RealityView, compatibilidad con apps iOS existentes.",
+        respuesta: "<b>visionOS</b> es el SO de Apple Vision Pro. Una app visionOS puede tener tres tipos de espacio: <b>WindowGroup</b> (ventana 2D flotante en el espacio, como una pantalla virtual — compatible automáticamente con apps iPadOS), <b>ImmersiveSpace</b> (la app toma control del entorno visual, puede ser parcial — mezcla con el mundo real, o total — reemplaza el entorno), y <b>Volume</b> (caja 3D donde se muestra contenido tridimensional). Dentro de SwiftUI se usa <b>RealityView</b> para añadir contenido 3D de RealityKit. Las apps iOS/iPadOS existentes corren sin modificación como ventana 2D en el espacio. <b>Respuesta parcial:</b> sabe que existe visionOS pero no conoce los tipos de espacios ni cómo sería publicar una app compatible."
+      }
+    ]
+  },
+  {
+    id: "arquitectura_ios",
+    sector: "ios",
+    nombre: "Arquitectura & Testing iOS",
+    peso: 4,
+    items: [
+      {
+        id: "arch_ios_patterns",
+        texto: "MVVM, Clean Architecture, Coordinators",
+        peso: 2,
+        ayuda: "MVVM con Combine/SwiftUI, Clean Layers (Domain/Data/Presentation), Coordinator pattern vs NavigationStack.",
+        respuesta: "<b>MVVM en iOS</b>: Model (datos y lógica de negocio), View (SwiftUI o UIKit — no contiene lógica), ViewModel (prepara los datos para mostrar, expone Publishers o @Observable, maneja acciones del usuario). La View nunca habla directamente con el Model. <b>Clean Architecture</b>: igual que en Android — capa Dominio (Use Cases, sin dependencias de Apple), capa Datos (Repositories, URLSession, Core Data) y capa Presentación (ViewModel, View). <b>Coordinators</b>: objeto que gestiona la navegación entre pantallas, desacoplando la View de saber a dónde navegar — útil en proyectos UIKit grandes. Con <b>NavigationStack</b> de SwiftUI se puede implementar navegación data-driven más simple sin Coordinators. <b>Respuesta parcial:</b> conoce MVVM pero mezcla responsabilidades entre ViewModel y View, o usa MVC sin haberlo elegido conscientemente."
+      },
+      {
+        id: "testing_ios",
+        texto: "Testing: XCTest, Xcode Cloud, UI Tests",
+        peso: 2,
+        ayuda: "XCTest/XCTestCase, mocking con protocolos, XCUITest, SnapshotTesting. Xcode Cloud: workflows, triggers, post-actions, integración con TestFlight.",
+        respuesta: "<b>XCTest</b>: framework nativo de Apple. La clase de test hereda de XCTestCase, cada método que empieza con 'test' es un test individual. XCTAssertEqual, XCTAssertNil, XCTAssertTrue para verificaciones. <b>Mocking en Swift</b>: crear un protocolo que define la interfaz, y una implementación mock que retorna datos fijos — sin librerías, aprovechando los protocolos de Swift. <b>XCUITest</b>: automatiza interacciones con la UI real en simulador/dispositivo (app.buttons['Login'].tap(), XCTAssertTrue(app.staticTexts['Bienvenido'].exists)). <b>Xcode Cloud</b>: CI/CD nativo de Apple integrado en Xcode y App Store Connect — se configuran workflows (triggers por push/PR/tag), los builds corren en infraestructura de Apple, y se puede distribuir automáticamente a TestFlight al pasar los tests. <b>Respuesta parcial:</b> escribe tests unitarios básicos pero no sabe hacer tests de UI ni configurar Xcode Cloud."
+      }
+    ]
+  },
+  {
+    id: "distribucion_ios",
+    sector: "ios",
+    nombre: "Distribución iOS",
+    peso: 2,
+    items: [
+      {
+        id: "appstore_dist",
+        texto: "App Store & TestFlight",
+        peso: 1,
+        ayuda: "Certificados, Provisioning Profiles, App Store Connect, revisión de Apple, hotfixes, versioning, staged rollout.",
+        respuesta: "Para publicar en iOS se necesitan dos cosas: un <b>Certificate</b> (identifica al desarrollador ante Apple, firmado por Apple CA) y un <b>Provisioning Profile</b> (vincula la app, el certificado y los dispositivos o la tienda autorizados). Tipos de profiles: Development (testing en dispositivos propios), Ad Hoc (hasta 100 dispositivos específicos), App Store (distribución pública). <b>TestFlight</b>: distribución beta — testers internos (equipo, instantáneo) y externos (hasta 10.000 usuarios, requiere revisión básica de Apple). El proceso de <b>revisión de Apple</b> revisa seguridad, privacidad, cumplimiento de HIG y funcionamiento. Para un <b>hotfix</b>: incrementar solo el build number, subir a TestFlight para validar, luego a producción. <b>Staged rollout</b>: lanzar al 1%-100% de usuarios progresivamente en la App Store. <b>Respuesta parcial:</b> ha publicado apps pero no entiende la diferencia entre certificados y provisioning profiles."
+      },
+      {
+        id: "web_dist",
+        texto: "Web Distribution (EU / JP) & alternative marketplaces",
+        peso: 1,
+        ayuda: "Web Distribution (iOS 17.4+ UE/JP): notarization, marketplace entitlements, AltStore, Setapp Mobile. Implicaciones legales DMA.",
+        respuesta: "Desde <b>iOS 17.4</b>, por exigencia del <b>DMA (Digital Markets Act)</b> de la Unión Europea, Apple permite distribuir apps fuera de la App Store en UE y Japón. Hay dos modalidades: <b>Web Distribution</b> (la app se descarga directamente desde la web del desarrollador, como en macOS) y <b>Alternative App Marketplaces</b> (tiendas de apps alternativas, como AltStore o Setapp Mobile). Requisitos: la app debe ser <b>notarizada</b> por Apple (revisión de seguridad básica para evitar malware, menos exhaustiva que el review normal). El desarrollador paga el <b>Core Technology Fee</b> (0.50€ por instalación después de 1 millón). Esto es relevante para apps con sistemas de pago propios (juegos, suscripciones) que eviten la comisión del 30% de Apple. <b>Respuesta parcial:</b> sabe que Apple está obligada a abrir iOS pero no conoce los detalles técnicos ni legales."
+      }
+    ]
+  },
+  // ===== SECTOR LÍDER TÉCNICO =====
+  {
+    id: "arch_decision",
+    sector: "lider",
+    nombre: "Arquitectura y Decisiones Técnicas",
+    peso: 8,
+    items: [
+      {
+        id: "cross_platform",
+        texto: "Decisiones cross-platform (KMP, Flutter, RN)",
+        peso: 4,
+        ayuda: "Cuándo elegir nativo vs KMP vs Flutter vs React Native. Trade-offs de cada enfoque, experiencia guiando la decisión.",
+        respuesta: "El candidato debe poder argumentar cuándo elegir cada enfoque, no solo listarlos. <b>Nativo puro</b> (Swift + Kotlin separados): máximo rendimiento y acceso a todas las APIs del SO, pero doble esfuerzo de desarrollo. <b>KMP</b>: comparte lógica de negocio (networking, base de datos, dominio) entre Android e iOS manteniendo la UI 100% nativa. Ideal cuando el equipo ya es mobile nativo y quiere reducir duplicación sin sacrificar experiencia nativa. <b>Flutter</b>: UI y lógica compartidas, motor propio de renderizado (no usa componentes nativos), lenguaje Dart. Bueno cuando se necesita paridad visual total entre plataformas. <b>React Native</b>: similar a Flutter pero usa componentes nativos con un bridge JavaScript — más fácil para equipos web. Un Líder debe saber articular el trade-off: velocidad de desarrollo vs experiencia de usuario vs mantenibilidad a largo plazo. <b>Respuesta parcial:</b> lista las opciones pero no puede argumentar cuándo elegiría una u otra con casos reales."
+      },
+      {
+        id: "design_patterns",
+        texto: "Patrones avanzados y principios SOLID",
+        peso: 4,
+        ayuda: "SOLID aplicado en mobile, DDD táctico, CQRS en cliente, patrones de resiliencia (retry, circuit breaker en SDK).",
+        respuesta: "SOLID en mobile con ejemplos concretos: <b>S</b> (Single Responsibility): el ViewModel no debe hacer llamadas a red directamente — eso es responsabilidad del Repository. <b>O</b> (Open/Closed): usar protocolos/interfaces para extender comportamiento sin modificar clases existentes (ej: añadir una nueva fuente de datos sin tocar el ViewModel). <b>D</b> (Dependency Inversion): el ViewModel depende de una interfaz NetworkService, no de URLSession directamente — permite testear con un mock. Patrones de diseño aplicados: <b>Repository</b> (abstrae fuentes de datos), <b>Factory</b> (creación compleja de objetos), <b>Strategy</b> (intercambiar algoritmos como parsers o validadores). Debe dar ejemplos de haber aplicado estos patrones en proyectos reales. <b>Respuesta parcial:</b> menciona SOLID de memoria pero no puede dar ejemplos concretos en código mobile."
+      }
+    ]
+  },
+  {
+    id: "gestion_equipo",
+    sector: "lider",
+    nombre: "Gestión de Equipo Técnico",
+    peso: 7,
+    items: [
+      {
+        id: "code_review",
+        texto: "Code reviews y estándares de calidad",
+        peso: 3,
+        ayuda: "Criterios de revisión, linting (Detekt/SwiftLint), guías de estilo, definición de 'done', gestión de deuda técnica.",
+        respuesta: "En un code review debe evaluar: corrección (¿hace lo que dice la historia?), legibilidad (¿otro developer lo entendería en 6 meses?), cumplimiento de principios SOLID, manejo correcto de errores, tests incluidos y funcionando, y posibles memory leaks o problemas de performance. <b>Herramientas</b>: Detekt (análisis estático Kotlin con reglas configurables), SwiftLint (análisis estático Swift), ktfmt/ktlint para formateo automático — todo integrado en el pipeline de CI para que fallen las PRs automáticamente si no cumplen. <b>Definición de 'done'</b>: la historia está terminada cuando pasa code review, tests unitarios y de UI pasando, sin warnings de linter, documentación actualizada si aplica. <b>Deuda técnica</b>: crear tickets específicos con el impacto estimado, reservar capacidad en el sprint (ej: 20%) y medir con cobertura de tests y complejidad ciclomática. <b>Respuesta parcial:</b> hace reviews pero no tiene criterios claros ni usa herramientas de análisis estático."
+      },
+      {
+        id: "mentoring",
+        texto: "Mentoring y crecimiento del equipo",
+        peso: 2,
+        ayuda: "Cómo hace crecer a desarrolladores junior/semi-senior. Pair programming, tech talks, onboarding.",
+        respuesta: "La respuesta debe incluir acciones concretas, no generalidades. Ejemplos de buenas prácticas: <b>pair programming</b> cuando el junior enfrenta un problema nuevo (no hacerlo por él, sino guiarlo a la solución), <b>asignación progresiva</b> de tareas más complejas con el acompañamiento necesario, <b>feedback estructurado</b> (qué hiciste bien + qué mejorar + cómo mejorarlo específicamente), <b>tech talks</b> del equipo (cada desarrollador explica algo que aprendió), <b>onboarding documentado</b> para que nuevos miembros sean productivos rápido. Diferencia clave: un buen mentor no resuelve los problemas del junior — le enseña a resolverlos. <b>Respuesta parcial:</b> dice que 'está disponible para ayudar' pero no describe acciones estructuradas de mentoring."
+      },
+      {
+        id: "stakeholders",
+        texto: "Comunicación con stakeholders y Product",
+        peso: 2,
+        ayuda: "Traducir requerimientos técnicos a negocio, estimaciones, gestión de expectativas, propuestas técnicas.",
+        respuesta: "El candidato debe demostrar que puede comunicar en ambas direcciones. <b>Técnico → negocio</b>: en lugar de 'refactorizar la capa de networking', decir 'reducir el tiempo de implementación de nuevas integraciones en un 50% y eliminar los crashes relacionados con timeouts que afectan al 3% de usuarios diarios'. <b>Estimaciones</b>: dar rangos con confianza (optimista: X días si no hay imprevistos, pesimista: Y días si Z riesgo se materializa) y listar explícitamente los supuestos. <b>Gestión de expectativas</b>: comunicar proactivamente cuando hay riesgo de no cumplir — no el último día. Si el scope amenaza la calidad, proponer reducir alcance en lugar de bajar calidad. <b>Respuesta parcial:</b> se comunica bien técnicamente pero tiene dificultad explicando decisiones en términos de impacto de negocio."
+      }
+    ]
+  },
+  {
+    id: "cicd_mobile",
+    sector: "lider",
+    nombre: "CI/CD y DevOps Mobile",
+    peso: 5,
+    items: [
+      {
+        id: "cicd_tools",
+        texto: "Pipelines: Fastlane, GitHub Actions, Bitrise",
+        peso: 3,
+        ayuda: "Automatización de builds, signing, deploy a TestFlight/Play Store. Modularización del pipeline.",
+        respuesta: "<b>Fastlane</b>: herramienta de automatización para mobile. Lanes (como 'beta' o 'release') ejecutan acciones en secuencia. match gestiona certificados y profiles de iOS de forma centralizada. gym compila la app. pilot distribuye a TestFlight. supply sube a Google Play. <b>GitHub Actions</b>: archivo YAML en .github/workflows/. Triggers por push a main o PR. Jobs con steps: checkout, setup Java/Ruby/Xcode, build, test, sign, distribute. Secretos (keystore, App Store credentials) en GitHub Secrets. Caché de Gradle/CocoaPods para acelerar builds. <b>Bitrise</b>: plataforma cloud especializada en mobile con steps pre-configurados — más simple de configurar que GitHub Actions pero más costoso. Un Líder debe saber qué herramienta recomendar según el tamaño y presupuesto del equipo. <b>Respuesta parcial:</b> ha usado alguna herramienta pero no puede diseñar un pipeline desde cero."
+      },
+      {
+        id: "monitoreo",
+        texto: "Monitoreo en producción (Crashlytics, Sentry)",
+        peso: 2,
+        ayuda: "Firebase Crashlytics, Sentry, DataDog. Definición de alertas, SLOs mobile, feature flags (LaunchDarkly, Firebase).",
+        respuesta: "<b>Firebase Crashlytics</b>: agrupa crashes similares automáticamente, muestra el stack trace, datos del dispositivo y pasos previos al crash. Permite crear alertas cuando la crash-free rate baja del umbral. <b>Sentry</b>: más flexible — captura errores no fatales, breadcrumbs (registro de acciones del usuario antes del error) y performance. <b>Feature flags</b> (Firebase Remote Config, LaunchDarkly): activar funcionalidades sin publicar una nueva versión, hacer A/B testing, lanzar gradualmente a % de usuarios, o desactivar rápidamente una feature con bugs. <b>SLOs mobile</b>: métricas a definir como 'crash-free sessions > 99.5%', 'latencia de pantalla principal < 2s', 'tamaño de descarga < 50MB'. El Líder debe saber definir estas métricas y configurar alertas automáticas cuando se superan. <b>Respuesta parcial:</b> usa Crashlytics reactivamente para ver crashes pero no ha definido SLOs ni usa feature flags."
+      }
+    ]
+  },
+  {
+    id: "soft_skills_lider",
+    sector: "lider",
+    nombre: "Habilidades Blandas — Liderazgo",
+    peso: 10,
+    items: [
+      {
+        id: "resolucion_conflicto",
+        texto: "Resolución de conflictos técnicos en equipo",
+        peso: 3,
+        ayuda: "Cómo maneja desacuerdos técnicos entre Android e iOS, toma de decisiones bajo presión.",
+        respuesta: "Debe dar un ejemplo concreto — una respuesta genérica es señal de alerta. La respuesta ideal describe: escuchar activamente ambas posiciones sin tomar partido inicialmente, pedir a cada parte que argumente con datos (benchmarks, ejemplos, experiencias pasadas), proponer un <b>spike o prueba de concepto</b> limitada para decidir con evidencia en lugar de opiniones, y una vez tomada la decisión alinearse con ella como equipo aunque no todos estén 100% de acuerdo. El Líder debe saber cuándo <b>escalar</b> la decisión a una jerarquía superior y cuándo es su responsabilidad decidir. Señal positiva: menciona que documentó la decisión y el razonamiento para que el equipo la entienda. <b>Respuesta parcial:</b> da un ejemplo vago o dice 'siempre llegamos a consenso' sin describir el proceso."
+      },
+      {
+        id: "entrega_presion",
+        texto: "Entrega bajo presión y gestión de riesgos",
+        peso: 3,
+        ayuda: "Priorización, manejo de scope, comunicación proactiva de bloqueos, plan de contingencia.",
+        respuesta: "La respuesta ideal muestra un framework claro, no solo 'trabajo más horas'. Puntos clave: <b>identificar el camino crítico</b> (qué tareas bloquean a las demás y deben ir primero), <b>reducir scope negociando</b> con Product qué es MVP mínimo viable vs qué puede diferirse a un próximo sprint, <b>comunicar proactivamente</b> cuando hay riesgo de no cumplir — con al menos 48-72 horas de anticipación, no el último día, y con opciones concretas, no solo el problema. <b>No sacrificar calidad</b> mínima: los hacks que ahorran un día pueden costar semanas después. <b>Plan de contingencia</b>: tener identificado de antemano qué se puede cortar si el tiempo se acorta más de lo esperado. <b>Respuesta parcial:</b> menciona que trabaja horas extra pero no muestra estrategias de priorización o comunicación estructurada."
+      },
+      {
+        id: "innovacion",
+        texto: "Adopción de nuevas tecnologías",
+        peso: 2,
+        ayuda: "Cómo evalúa y propone adopción de nuevas libs/frameworks. Gestión del cambio en el equipo.",
+        respuesta: "El proceso ideal para un Líder: 1) <b>Identificar la necesidad real</b> — no adoptar tecnología por moda o por que es 'lo nuevo'. 2) <b>Spike/POC acotado</b> — probar la tecnología en un contexto real del proyecto, con un tiempo límite (ej: 1 semana). 3) <b>Evaluar trade-offs</b>: madurez de la librería, soporte de la comunidad, curva de aprendizaje del equipo, costo de migración, licencia. 4) <b>Compartir con el equipo</b> antes de decidir: tech talk, demo, documentar pros y contras. 5) <b>Adopción gradual</b>: primero en una feature nueva pequeña, no en el módulo más crítico. 6) <b>Plan de rollback</b> si la tecnología no funciona como se esperaba. <b>Respuesta parcial:</b> adopta tecnologías nuevas personalmente pero no tiene un proceso estructurado para introducirlas en el equipo."
+      },
+      {
+        id: "colaboracion_lider",
+        texto: "Colaboración cross-funcional (UX, Backend, QA)",
+        peso: 2,
+        ayuda: "Experiencia trabajando con diseño, backend, QA y producto en proyectos con múltiples plataformas.",
+        respuesta: "El Líder debe colaborar <b>proactivamente</b>, no reactivamente. Con <b>UX/Diseño</b>: revisar los diseños antes de que lleguen al sprint para detectar inviabilidades técnicas temprano (no el día de implementación), proponer componentes reutilizables alineados con el Design System, informar de limitaciones de plataforma (animaciones, gestos). Con <b>Backend</b>: participar en la definición del contrato de API (OpenAPI/Swagger) antes de que Backend lo implemente, coordinar versioning de APIs para que Android e iOS no rompan simultáneamente. Con <b>QA</b>: involucrarlos desde el diseño para definir criterios de aceptación, no solo al final para que busquen bugs. Con <b>Product</b>: participar en el refinamiento de historias para estimar y detectar ambigüedades o riesgos técnicos antes de comprometerse con el sprint. <b>Respuesta parcial:</b> trabaja con otros equipos solo cuando hay un problema, sin una estrategia proactiva."
+      }
+    ]
+  }
+];
+
+const SECTOR_LABELS = { android: "Android", ios: "iOS", lider: "Líder Técnico" };
+const CLAVE_BORRADO = "1234567890";
+let pendienteId = null;
+const DRAFT_KEY = "borrador_evaluacion_hibrido";
+const HISTORIAL_KEY = "evaluaciones_hibrido";
+
+// ─── CONSTRUIR RÚBRICA ───────────────────────────────────────────────────────
+function crearRadio(id) {
+  const cont = document.createElement("div");
+  cont.className = "radios";
+  [{v:0,t:"No"},{v:.5,t:"Parcial"},{v:1,t:"Sí"}].forEach(o => {
+    const r = document.createElement("input");
+    r.type = "radio"; r.name = id; r.value = o.v;
+    r.addEventListener("change", () => { calcular(); saveDraft(); });
+    const l = document.createElement("label");
+    l.appendChild(r); l.appendChild(document.createTextNode(" " + o.t));
+    cont.appendChild(l);
+  });
+  return cont;
+}
+
+function construir() {
+  const root = document.getElementById("rubrica");
+  const sectores = ["android", "ios", "lider"];
+  const sectorIcons = { android: "🤖", ios: "", lider: "🏆" };
+  const sectorDesc = {
+    android: "Java · Kotlin — Peso total: " + pesoSector("android") + "pts",
+    ios: "Swift · Objective-C — Peso total: " + pesoSector("ios") + "pts",
+    lider: "Decisiones técnicas · Gestión · CI/CD — Peso total: " + pesoSector("lider") + "pts"
+  };
+
+  sectores.forEach(sec => {
+    const sDiv = document.createElement("div");
+    sDiv.className = "sector " + sec;
+
+    const sh = document.createElement("div");
+    sh.className = "sector-header";
+    sh.innerHTML = `<span class="sector-icon">${sectorIcons[sec]}</span>
+      <span class="sector-title">${SECTOR_LABELS[sec]}</span>
+      <span class="sector-weight">${sectorDesc[sec]}</span>`;
+    sDiv.appendChild(sh);
+
+    const sd = document.createElement("div");
+    sd.className = "sector-divider";
+    sDiv.appendChild(sd);
+
+    rubrica.filter(s => s.sector === sec).forEach(bloque => {
+      const s = document.createElement("div");
+      s.className = "section";
+      const h = document.createElement("h3");
+      const w = document.createElement("span");
+      w.className = "badge";
+      w.style.marginLeft = "8px";
+      w.textContent = "Peso " + bloque.peso;
+      h.textContent = bloque.nombre;
+      h.appendChild(w);
+      s.appendChild(h);
+
+      bloque.items.forEach(it => {
+        const itemWrap = document.createElement("div");
+        itemWrap.className = "item-wrap";
+
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const lab = document.createElement("div");
+        lab.textContent = it.texto;
+        const pw = document.createElement("span");
+        pw.className = "badge";
+        pw.style.marginLeft = "8px";
+        pw.textContent = "Peso " + it.peso;
+        lab.appendChild(pw);
+        if (it.respuesta) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn-toggle-resp";
+          btn.textContent = "Ver respuesta esperada";
+          lab.appendChild(document.createElement("br"));
+          lab.appendChild(btn);
+          const panel = document.createElement("div");
+          panel.className = "respuesta-esperada";
+          panel.innerHTML = "<strong>Respuesta esperada</strong>" + it.respuesta;
+          btn.addEventListener("click", () => {
+            const visible = panel.style.display === "block";
+            panel.style.display = visible ? "none" : "block";
+            btn.textContent = visible ? "Ver respuesta esperada" : "Ocultar respuesta";
+          });
+          itemWrap.appendChild(row);
+          itemWrap.appendChild(panel);
+        } else {
+          itemWrap.appendChild(row);
+        }
+        row.appendChild(lab);
+
+        const help = document.createElement("div");
+        help.className = "help";
+        help.textContent = it.ayuda;
+        row.appendChild(help);
+
+        const radios = document.createElement("div");
+        radios.appendChild(crearRadio(it.id));
+        row.appendChild(radios);
+
+        s.appendChild(itemWrap);
+      });
+
+      const lbl = document.createElement("label");
+      lbl.textContent = "Comentarios";
+      s.appendChild(lbl);
+      const ta = document.createElement("textarea");
+      ta.id = "c_" + bloque.id;
+      ta.addEventListener("input", saveDraft);
+      s.appendChild(ta);
+      sDiv.appendChild(s);
+    });
+
+    root.appendChild(sDiv);
+  });
+}
+
+function pesoSector(sec) {
+  return rubrica.filter(s => s.sector === sec).reduce((a, b) => a + b.peso, 0);
+}
+
+// ─── CÁLCULO ─────────────────────────────────────────────────────────────────
+function calcularSector(sec) {
+  let suma = 0, pesos = 0;
+  rubrica.filter(s => s.sector === sec).forEach(bloque => {
+    bloque.items.forEach(it => {
+      const sel = document.querySelector("input[name='" + it.id + "']:checked");
+      const v = sel ? parseFloat(sel.value) : 0;
+      suma += v * it.peso; pesos += it.peso;
+    });
+  });
+  return pesos ? Math.round((suma / pesos) * 100) : 0;
+}
+
+function calcular() {
+  let suma = 0, pesos = 0;
+  rubrica.forEach(bloque => {
+    bloque.items.forEach(it => {
+      const sel = document.querySelector("input[name='" + it.id + "']:checked");
+      const v = sel ? parseFloat(sel.value) : 0;
+      suma += v * it.peso; pesos += it.peso;
+    });
+  });
+  const pct = pesos ? Math.round((suma / pesos) * 100) : 0;
+  document.getElementById("puntaje").textContent = pct + "%";
+  document.getElementById("scoreAndroid").textContent = calcularSector("android") + "%";
+  document.getElementById("scoreIOS").textContent = calcularSector("ios") + "%";
+  document.getElementById("scoreLider").textContent = calcularSector("lider") + "%";
+
+  const dec = document.getElementById("decision");
+  dec.textContent = pct >= 90 ? "Contratar" : (pct >= 75 ? "Continuar proceso" : "Descartar");
+  dec.className = pct >= 80 ? "decision ok" : (pct >= 65 ? "decision warn" : "decision bad");
+}
+
+// ─── BORRADOR ────────────────────────────────────────────────────────────────
+function saveDraft() {
+  const nombre = document.getElementById("nombre").value.trim();
+  const senior = document.getElementById("senioridad").value;
+  const radios = {};
+  rubrica.forEach(bloque => { bloque.items.forEach(it => { const sel = document.querySelector("input[name='" + it.id + "']:checked"); if (sel) radios[it.id] = parseFloat(sel.value); }); });
+  const notas = {}; rubrica.forEach(bloque => { const ta = document.getElementById("c_" + bloque.id); notas[bloque.id] = ta ? ta.value : ""; });
+  localStorage.setItem(DRAFT_KEY, JSON.stringify({ nombre, senior, radios, notas }));
+}
+
+function loadDraft() {
+  const raw = localStorage.getItem(DRAFT_KEY); if (!raw) return;
+  let d; try { d = JSON.parse(raw); } catch(e) { return; }
+  if (d && d.nombre !== undefined) document.getElementById("nombre").value = d.nombre || "";
+  if (d && d.senior !== undefined) document.getElementById("senioridad").value = d.senior || document.getElementById("senioridad").value;
+  if (d && d.radios) Object.keys(d.radios).forEach(id => { const r = document.querySelector("input[name='" + id + "'][value='" + String(d.radios[id]) + "']"); if (r) r.checked = true; });
+  if (d && d.notas) Object.keys(d.notas).forEach(bid => { const ta = document.getElementById("c_" + bid); if (ta) ta.value = d.notas[bid] || ""; });
+}
+
+// ─── GUARDAR ─────────────────────────────────────────────────────────────────
+function guardar() {
+  const nombre = document.getElementById("nombre").value.trim();
+  if (!nombre) { showToast("Ingresa el nombre del candidato", "warn"); return; }
+  const senior = document.getElementById("senioridad").value;
+  let suma = 0, pesos = 0; const det = {};
+  rubrica.forEach(bloque => {
+    bloque.items.forEach(it => {
+      const sel = document.querySelector("input[name='" + it.id + "']:checked");
+      const v = sel ? parseFloat(sel.value) : 0;
+      const label = v === 1 ? "Sí" : (v === 0.5 ? "Parcial" : "No");
+      suma += v * it.peso; pesos += it.peso;
+      det[it.id] = { v, w: it.peso, label };
+    });
+  });
+  const pct = pesos ? Math.round((suma / pesos) * 100) : 0;
+  const dec = pct >= 90 ? "Contratar" : (pct >= 75 ? "Continuar proceso" : "Descartar");
+  const notas = {}; rubrica.forEach(bloque => { notas[bloque.id] = document.getElementById("c_" + bloque.id).value; });
+  const reg = {
+    id: Date.now(), fecha: new Date().toISOString(), nombre, senior, puntaje: pct,
+    android: calcularSector("android"), ios: calcularSector("ios"), lider: calcularSector("lider"),
+    decision: dec, notas, det
+  };
+  const actual = JSON.parse(localStorage.getItem(HISTORIAL_KEY) || "[]");
+  actual.push(reg);
+  localStorage.setItem(HISTORIAL_KEY, JSON.stringify(actual));
+  localStorage.removeItem(DRAFT_KEY);
+  renderTabla();
+  showToast("Evaluación guardada correctamente");
+}
+
+function nueva() {
+  document.getElementById("nombre").value = "";
+  document.getElementById("senioridad").value = "Junior";
+  rubrica.forEach(bloque => {
+    bloque.items.forEach(it => { document.querySelectorAll("input[name='" + it.id + "']").forEach(r => r.checked = false); });
+    const ta = document.getElementById("c_" + bloque.id); if (ta) ta.value = "";
+  });
+  calcular(); saveDraft();
+}
+
+// ─── TABLA ───────────────────────────────────────────────────────────────────
+function renderTabla() {
+  const data = JSON.parse(localStorage.getItem(HISTORIAL_KEY) || "[]");
+  const filtro = document.getElementById("filtro").value.toLowerCase();
+  const tbody = document.querySelector("#tabla tbody");
+  tbody.innerHTML = "";
+  data.filter(d => !filtro || d.nombre.toLowerCase().includes(filtro))
+    .sort((a, b) => b.puntaje - a.puntaje)
+    .forEach(d => {
+      const tr = document.createElement("tr");
+      const f = new Date(d.fecha).toLocaleString();
+      const cls = d.puntaje >= 90 ? "ok" : (d.puntaje >= 75 ? "warn" : "bad");
+      tr.innerHTML = `<td>${f}</td><td>${d.nombre}</td><td>${d.senior}</td>
+        <td class="${cls}">${d.puntaje}%</td>
+        <td>${d.android !== undefined ? d.android + "%" : "-"}</td>
+        <td>${d.ios !== undefined ? d.ios + "%" : "-"}</td>
+        <td>${d.lider !== undefined ? d.lider + "%" : "-"}</td>
+        <td class="${cls}">${d.decision}</td>
+        <td><button type="button" style="background:#7c3aed;color:#fff;border:0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer" onclick="generarFeedback(JSON.parse(localStorage.getItem('${HISTORIAL_KEY}')||'[]').find(x=>String(x.id)==='${d.id}'))">Feedback</button></td>
+        <td><button type="button" class="secondary" onclick="borrarPorId('${d.id}')">Borrar</button></td>`;
+      tbody.appendChild(tr);
+    });
+}
+
+// ─── EXPORTAR ────────────────────────────────────────────────────────────────
+function exportJSON() {
+  const data = localStorage.getItem(HISTORIAL_KEY) || "[]";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([data], {type:"application/json"}));
+  a.download = "evaluaciones_hibrido.json"; a.click();
+}
+
+function buildAOA() {
+  const data = JSON.parse(localStorage.getItem(HISTORIAL_KEY) || "[]");
+  const baseCols = ["fecha","nombre","senior","puntaje_global","android","ios","lider","decision"];
+  const detailCols = [];
+  rubrica.forEach(bloque => {
+    bloque.items.forEach(it => { detailCols.push({type:"item",bloqueId:bloque.id,itemId:it.id,header:"["+SECTOR_LABELS[bloque.sector]+"] "+bloque.nombre+" - "+it.texto+" (peso "+it.peso+")"}); });
+    detailCols.push({type:"comment",bloqueId:bloque.id,header:"Comentario - "+bloque.nombre});
+  });
+  const headers = baseCols.concat(detailCols.map(i => i.header));
+  const aoa = [headers];
+  data.forEach(d => {
+    const base = [d.fecha,d.nombre,d.senior,d.puntaje,d.android||0,d.ios||0,d.lider||0,d.decision];
+    const detail = detailCols.map(col => {
+      if (col.type === "item") { const di = d.det && d.det[col.itemId]; return di ? di.label : "Sin respuesta"; }
+      return (d.notas && d.notas[col.bloqueId]) || "";
+    });
+    aoa.push(base.concat(detail));
+  });
+  return aoa;
+}
+
+function exportXLSX() {
+  try {
+    if (typeof XLSX === "undefined") { showToast("No se pudo cargar XLSX","error"); return; }
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildAOA()), "Evaluaciones Híbrido");
+    XLSX.writeFile(wb, "evaluaciones_hibrido.xlsx", {bookType:"xlsx"});
+  } catch(e) { showToast("Error exportando XLSX","error"); }
+}
+
+function exportXLSM() {
+  try {
+    if (typeof XLSX === "undefined") { showToast("No se pudo cargar XLSX","error"); return; }
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildAOA()), "Evaluaciones Híbrido");
+    XLSX.writeFile(wb, "evaluaciones_hibrido.xlsm", {bookType:"xlsm"});
+  } catch(e) { showToast("Error exportando XLSM","error"); }
+}
+
+// ─── BORRAR ──────────────────────────────────────────────────────────────────
+function borrarPorId(id) {
+  pendienteId = id;
+  document.getElementById("claveDel").value = "";
+  document.getElementById("modalDel").style.display = "flex";
+  setTimeout(() => document.getElementById("claveDel").focus(), 0);
+}
+
+function cerrarModalDel() {
+  pendienteId = null;
+  document.getElementById("modalDel").style.display = "none";
+}
+
+function confirmarBorrado() {
+  if ((document.getElementById("claveDel").value || "").trim() !== CLAVE_BORRADO) { showToast("Clave incorrecta","error"); return; }
+  const data = JSON.parse(localStorage.getItem(HISTORIAL_KEY) || "[]");
+  localStorage.setItem(HISTORIAL_KEY, JSON.stringify(data.filter(d => String(d.id) !== String(pendienteId))));
+  cerrarModalDel(); renderTabla(); showToast("Evaluación borrada correctamente");
+}
+
+function showToast(msg, type="ok") {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = "toast " + type + " show";
+  setTimeout(() => { t.className = "toast " + type; }, 3000);
+}
+
+// ─── EVENTOS ─────────────────────────────────────────────────────────────────
+// ─── FEEDBACK RR.HH. ─────────────────────────────────────────────────────────
+function recopilarEvaluacionActual() {
+  const nombre = document.getElementById("nombre").value.trim() || "Sin nombre";
+  const senior = document.getElementById("senioridad").value;
+  let suma = 0, pesos = 0; const det = {};
+  rubrica.forEach(bloque => {
+    bloque.items.forEach(it => {
+      const sel = document.querySelector("input[name='" + it.id + "']:checked");
+      const v = sel ? parseFloat(sel.value) : 0;
+      suma += v * it.peso; pesos += it.peso;
+      det[it.id] = { v, w: it.peso, label: v === 1 ? "Sí" : (v === 0.5 ? "Parcial" : "No") };
+    });
+  });
+  const pct = pesos ? Math.round((suma / pesos) * 100) : 0;
+  const notas = {}; rubrica.forEach(bloque => { const ta = document.getElementById("c_" + bloque.id); notas[bloque.id] = ta ? ta.value : ""; });
+  return { nombre, senior, puntaje: pct, android: calcularSector("android"), ios: calcularSector("ios"), lider: calcularSector("lider"), decision: pct >= 90 ? "Contratar" : (pct >= 75 ? "Continuar proceso" : "Descartar"), det, notas, fecha: new Date().toISOString() };
+}
+
+function generarFeedback(reg) {
+  if (!reg) { showToast("No se encontraron datos para generar el informe", "error"); return; }
+  const f = new Date(reg.fecha).toLocaleString("es-MX", { dateStyle: "full", timeStyle: "short" });
+  const decColor = reg.puntaje >= 90 ? "#16a34a" : (reg.puntaje >= 75 ? "#d97706" : "#dc2626");
+  const decBg    = reg.puntaje >= 90 ? "#dcfce7" : (reg.puntaje >= 75 ? "#fef3c7" : "#fee2e2");
+  const SEC = { android: { label: "Android", sub: "Java · Kotlin", color: "#16a34a", score: reg.android }, ios: { label: "iOS", sub: "Swift · Objective-C", color: "#2563eb", score: reg.ios }, lider: { label: "Líder Técnico", sub: "Arquitectura · Gestión · CI/CD", color: "#9333ea", score: reg.lider } };
+
+  const bar = (pct, col) => `<div style="flex:1;background:#e2e8f0;border-radius:999px;height:8px"><div style="background:${col};width:${Math.min(pct||0,100)}%;height:8px;border-radius:999px"></div></div>`;
+
+  let sectoresHtml = "";
+  ["android", "ios", "lider"].forEach(sec => {
+    const s = SEC[sec];
+    let bloquesHtml = "";
+    rubrica.filter(b => b.sector === sec).forEach(bloque => {
+      const filas = bloque.items.map(it => {
+        const d = reg.det && reg.det[it.id]; const v = d ? d.v : -1;
+        const sym = v === 1 ? "●" : (v === 0.5 ? "◑" : (d ? "○" : "—"));
+        const col = v === 1 ? "#16a34a" : (v === 0.5 ? "#d97706" : (d ? "#dc2626" : "#94a3b8"));
+        const lbl = d ? d.label : "—";
+        return `<tr><td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;font-size:12.5px">${it.texto}</td><td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:15px;color:${col}">${sym}</td><td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:12px;color:${col};font-weight:700">${lbl}</td><td style="padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:12px;color:#64748b">${it.peso}</td></tr>`;
+      }).join("");
+      const nota = reg.notas && reg.notas[bloque.id] ? reg.notas[bloque.id] : "";
+      bloquesHtml += `<div style="margin-bottom:14px"><div style="font-size:13px;font-weight:700;color:${s.color};padding:3px 0;border-bottom:2px solid ${s.color}22;margin-bottom:6px">${bloque.nombre}</div><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#f8fafc"><th style="padding:5px 8px;text-align:left;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Pregunta</th><th style="width:36px"></th><th style="padding:5px 8px;text-align:center;font-size:11px;color:#64748b;font-weight:600;width:80px">Resultado</th><th style="padding:5px 8px;text-align:center;font-size:11px;color:#64748b;font-weight:600;width:48px">Peso</th></tr></thead><tbody>${filas}</tbody></table>${nota ? `<div style="margin-top:6px;padding:7px 10px;background:#f8fafc;border-left:3px solid #cbd5e1;border-radius:0 6px 6px 0;font-size:12px;color:#475569"><strong>Comentarios:</strong> ${nota}</div>` : ""}</div>`;
+    });
+    sectoresHtml += `<div style="margin-bottom:28px;page-break-inside:avoid"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid ${s.color}"><h2 style="margin:0;font-size:15px;color:${s.color}">${s.label}</h2><span style="font-size:12px;color:#64748b">${s.sub}</span><div style="margin-left:auto;display:flex;align-items:center;gap:8px;min-width:160px">${bar(s.score, s.color)}<span style="font-size:15px;font-weight:800;color:${s.color};min-width:38px">${s.score !== undefined ? s.score + "%" : "—"}</span></div></div>${bloquesHtml}</div>`;
+  });
+
+  const fuertes = [], debiles = [];
+  rubrica.forEach(b => b.items.forEach(it => { const d = reg.det && reg.det[it.id]; if (d && d.v === 1) fuertes.push(`[${SEC[b.sector].label}] ${it.texto}`); if (d && d.v === 0) debiles.push(`[${SEC[b.sector].label}] ${it.texto}`); }));
+  const liFt = fuertes.length ? fuertes.map(t => `<li style="margin-bottom:4px">${t}</li>`).join("") : `<li style="color:#94a3b8;font-style:italic">Sin áreas con respuesta correcta completa</li>`;
+  const liDb = debiles.length ? debiles.map(t => `<li style="margin-bottom:4px">${t}</li>`).join("") : `<li style="color:#94a3b8;font-style:italic">Sin áreas sin respuesta</li>`;
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Feedback — ${reg.nombre}</title><style>*{box-sizing:border-box}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;padding:0;background:#fff;color:#1e293b}.page{max-width:920px;margin:0 auto;padding:32px 40px}@media print{.no-print{display:none!important}.page{padding:16px 20px}}</style></head><body>
+<div class="page">
+<div class="no-print" style="position:sticky;top:0;background:#0f172a;padding:10px 20px;display:flex;gap:10px;align-items:center;margin:-32px -40px 28px;border-bottom:1px solid #1e293b;z-index:100">
+  <span style="color:#94a3b8;font-size:13px;flex:1">Vista previa · Informe de Evaluación Técnica</span>
+  <button onclick="window.print()" style="background:#7c3aed;color:#fff;border:0;padding:8px 20px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600">Imprimir / Guardar PDF</button>
+  <button onclick="window.close()" style="background:#334155;color:#fff;border:0;padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer">Cerrar</button>
+</div>
+<div style="border-bottom:3px solid #0f172a;padding-bottom:16px;margin-bottom:20px">
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#64748b;margin-bottom:4px">Informe de Evaluación Técnica — Uso Interno RR.HH.</div>
+  <h1 style="margin:0;font-size:26px;color:#0f172a;font-weight:800">${reg.nombre}</h1>
+  <div style="margin-top:6px;font-size:13px;color:#475569">Perfil: <strong>Híbrido Nativo (Java · Kotlin · Swift · Objective-C)</strong> &nbsp;·&nbsp; Senioridad evaluada: <strong>${reg.senior}</strong> &nbsp;·&nbsp; Fecha: <strong>${f}</strong></div>
+</div>
+<div style="background:${decBg};border:2px solid ${decColor};border-radius:12px;padding:16px 24px;margin-bottom:20px;display:flex;align-items:center;gap:24px">
+  <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:${decColor};font-weight:700;margin-bottom:4px">Decisión recomendada</div><div style="font-size:28px;font-weight:800;color:${decColor}">${reg.decision}</div></div>
+  <div style="margin-left:auto;text-align:right"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:4px">Puntaje global</div><div style="font-size:40px;font-weight:800;color:${decColor};line-height:1">${reg.puntaje}%</div></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:28px">
+  ${["android","ios","lider"].map(k=>`<div style="border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px"><div style="font-size:11px;color:#64748b;margin-bottom:2px">${SEC[k].sub}</div><div style="font-size:15px;font-weight:700;color:${SEC[k].color};margin-bottom:8px">${SEC[k].label}</div><div style="display:flex;align-items:center;gap:8px">${bar(SEC[k].score,SEC[k].color)}<span style="font-size:16px;font-weight:800;color:${SEC[k].color}">${SEC[k].score!==undefined?SEC[k].score+"%":"—"}</span></div></div>`).join("")}
+</div>
+<div style="background:#f8fafc;border-radius:8px;padding:10px 16px;margin-bottom:24px;font-size:12px;color:#475569;display:flex;flex-wrap:wrap;gap:20px">
+  <span><span style="color:#16a34a;font-size:14px">●</span> <strong>Sí</strong> — Respuesta correcta y completa</span>
+  <span><span style="color:#d97706;font-size:14px">◑</span> <strong>Parcial</strong> — Respuesta incompleta o con vacíos</span>
+  <span><span style="color:#dc2626;font-size:14px">○</span> <strong>No</strong> — No respondió o respuesta incorrecta</span>
+</div>
+${sectoresHtml}
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;page-break-inside:avoid">
+  <div style="border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px"><div style="font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px">Fortalezas identificadas</div><ul style="margin:0;padding-left:16px;font-size:12px;color:#374151;line-height:1.6">${liFt}</ul></div>
+  <div style="border:1px solid #fecaca;border-radius:10px;padding:14px 16px"><div style="font-size:13px;font-weight:700;color:#dc2626;margin-bottom:8px">Áreas de mejora detectadas</div><ul style="margin:0;padding-left:16px;font-size:12px;color:#374151;line-height:1.6">${liDb}</ul></div>
+</div>
+<div style="margin-top:32px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:11px;color:#94a3b8;text-align:center">Documento generado automáticamente por el sistema de evaluación técnica · ${new Date().toLocaleString("es-MX")}</div>
+</div></body></html>`;
+
+  const w = window.open("", "_blank", "width=980,height=860");
+  if (!w) { showToast("El navegador bloqueó la ventana emergente. Permite pop-ups para este sitio.", "warn"); return; }
+  w.document.write(html);
+  w.document.close();
+}
+
+document.getElementById("btnGuardar").addEventListener("click", guardar);
+document.getElementById("btnNueva").addEventListener("click", nueva);
+document.getElementById("btnJSON").addEventListener("click", exportJSON);
+document.getElementById("btnXLSX").addEventListener("click", exportXLSX);
+document.getElementById("btnXLSM").addEventListener("click", exportXLSM);
+document.getElementById("btnFeedback").addEventListener("click", () => generarFeedback(recopilarEvaluacionActual()));
+document.getElementById("btnDelCancel").addEventListener("click", () => { cerrarModalDel(); showToast("Acción cancelada","warn"); });
+document.getElementById("btnDelOk").addEventListener("click", confirmarBorrado);
+document.getElementById("senioridad").addEventListener("change", () => { calcular(); saveDraft(); });
+document.getElementById("nombre").addEventListener("input", saveDraft);
+document.getElementById("filtro").addEventListener("input", renderTabla);
+document.getElementById("btnRecuperar").addEventListener("click", () => { loadDraft(); calcular(); showToast("Borrador recuperado"); });
+document.getElementById("btnLimpiar").addEventListener("click", () => { localStorage.removeItem(DRAFT_KEY); showToast("Borrador eliminado","warn"); });
+window.addEventListener("beforeunload", saveDraft);
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+construir();
+loadDraft();
+calcular();
+renderTabla();
+</script>
+</body>
+</html>
